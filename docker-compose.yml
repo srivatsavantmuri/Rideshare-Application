@@ -1,0 +1,96 @@
+version: '3.1'
+
+services:
+
+  zoo:
+    image: zookeeper
+    restart: on-failure
+    hostname: zoo
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
+
+  rmq:
+    image: rabbitmq:3.8.3-alpine
+
+
+  orchestrator:
+     build: 
+       context: ./rabbitmq
+     command: sh -c "sleep 30 && python orch.py"
+     volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     restart: on-failure    
+     links:  
+     - rmq
+     - zoo
+     depends_on:
+     - rmq
+     - zoo
+     ports: 
+     - "5000:5000"
+
+  users:
+    build: 
+       context: ./users
+    command: sh -c "sleep 40 && python users.py"
+    container_name: users
+    image: users:latest
+    restart: on-failure
+    ports:
+      - "5002:5002"
+
+
+  rides:
+    build: 
+       context: ./rides
+    command: sh -c "sleep 40 &&  python rides.py"
+    container_name: rides
+    image: rides:latest
+    restart: on-failure
+    ports:
+      - "5001:5001"
+
+  worker1:
+    build:
+       context: ./rabbitmq/slave
+       dockerfile: Dockerfile
+    command:  sh -c " sleep 60 && python slave.py "
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    container_name: worker1
+    image: worker:latest
+    links:
+    - rmq   
+    - zoo 
+    depends_on:
+    - rmq
+    - zoo
+   
+
+  worker2:
+    build:
+       context: ./rabbitmq/slave
+       dockerfile: Dockerfile
+    command:  sh -c " sleep 60 && python slave.py "
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    container_name: worker2
+    image: worker:latest
+    links:
+    - rmq   
+    - zoo 
+    depends_on:
+    - rmq
+    - zoo
+  
+
+  
+      
+
+
+
+
+  

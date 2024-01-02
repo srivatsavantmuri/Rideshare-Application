@@ -1,0 +1,10 @@
+pika
+uuid
+flask
+flask_sqlalchemy
+sqlalchemy
+requests
+datetime
+numpy
+docker
+kazoo
