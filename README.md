@@ -10,13 +10,6 @@ The following tools were used for building this project:
 5. Docker SDK to dynamically spawn and stop containers
 
 
-Related work
-https://www.rabbitmq.com/getstarted.html -We looked through Worker Queues and RPC tutorial from the above link .
-https://docker-py.readthedocs.io/en/stable/ - For the docker sdk part , We looked through the documentation from the above link .
-https://kazoo.readthedocs.io/en/latest/- The above documentation was made use for implementing zookeeper using the kazoo module . 
-https://hackernoon.com/what-is-amazon-elastic-load-balancer-elb-16cdcedbd485 - The tutorial above was used for implementation of Load-Balancer .
-
-
 ALGORITHM/DESIGN
 The orchestrator exposes the DB read and write APIs which are used by the API handlers in Users and Rides containers. The implementation of read and write API in orchestrator is as follows:
 Read API - The orchestrator publishes a request into a ‘read_queue’ which is consumed by slave workers in a round-robin fashion. The slaves publish a response back to the orchestrator in the ‘res_queue’. RPC objects are used to handle the read API.
