@@ -3,6 +3,7 @@ There were three Amazon EC2 instances which were used to deploy the project. The
 The users and rides microservices were no longer using their own database but a DBaaS was used. DBaaS stands for ‘Database as a Service’ which provides all functionalities of a database. It also has various services running such as RabbitMQ, Zookeeper and Scaling Services. 
 
 The following tools were used for building this project:
+
 1. SqlAlchemy as our Database
 2. RabbitMQ as a Message Broker
 3. Zookeeper using Kazoo for Fault Tolerance
@@ -11,6 +12,7 @@ The following tools were used for building this project:
 
 
 ALGORITHM/DESIGN
+
 The orchestrator exposes the DB read and write APIs which are used by the API handlers in Users and Rides containers. The implementation of read and write API in orchestrator is as follows:
 Read API - The orchestrator publishes a request into a ‘read_queue’ which is consumed by slave workers in a round-robin fashion. The slaves publish a response back to the orchestrator in the ‘res_queue’. RPC objects are used to handle the read API.
 Write API - The orchestrator publishes a request into the ‘write_queue’ which is consumed by the master worker only. The master updates its database and publishes the request further into the ‘syncQ’ exchange which is consumed by all the slave workers. Hence eventual consistency is attained. No response is sent back to the orchestrator.
